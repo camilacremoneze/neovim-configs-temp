@@ -62,22 +62,13 @@ Icons in nvim-tree, gitsigns, blink.cmp, and the statusline require a [Nerd Font
 1. **Install a Nerd Font**
 
    ```bash
-   # macOS
    brew tap homebrew/cask-fonts
    brew install --cask font-jetbrains-mono-nerd-font
-
-   # or download manually from https://www.nerdfonts.com/font-downloads
    ```
 
-2. **Set it as your terminal's font**
+2. **Set it as your terminal's font (iTerm2)**
 
-   | Terminal | How |
-   |---|---|
-   | iTerm2 | Preferences → Profiles → Text → Font → select `JetBrainsMono Nerd Font` |
-   | Alacritty | `font.normal.family = "JetBrainsMono Nerd Font"` in `alacritty.toml` |
-   | Kitty | `font_family JetBrainsMono Nerd Font` in `kitty.conf` |
-   | WezTerm | `config.font = wezterm.font("JetBrainsMono Nerd Font")` in `wezterm.lua` |
-   | VS Code integrated terminal | `"terminal.integrated.fontFamily": "JetBrainsMono Nerd Font"` in `settings.json` |
+   Preferences → Profiles → Text → Font → select `JetBrainsMono Nerd Font`
 
 3. **Restart the terminal** and reopen Neovim — icons should render correctly in nvim-tree, gitsigns, and completion menus.
 
@@ -235,16 +226,17 @@ The cursor position is pinned with `winsaveview` / `winrestview` so it does not 
 
 **Covered file types:**
 
-| Extension | Formatter | Organize Imports |
-|---|---|---|
-| `*.go` | gopls / gofumpt | yes |
-| `*.py` | pyright | yes |
-| `*.lua` | lua_ls | no |
-| `*.js` `*.jsx` | vtsls | yes |
-| `*.ts` `*.tsx` | vtsls | yes |
-| `*.json` | jsonls + SchemaStore | no |
-| `*.tf` | terraformls | no |
-| `*.feature` | cucumber_language_server | no |
+| Extension | Organize Imports |
+|---|---|
+| `*.py` | yes |
+| `*.lua` | no |
+| `*.js` `*.jsx` | yes |
+| `*.ts` `*.tsx` | yes |
+| `*.json` | no |
+| `*.tf` | no |
+| `*.feature` | no |
+
+> `*.go` is not listed here: formatting relies on `gofumpt`, which is not installed by Mason and must be installed manually (`go install mvdan.cc/gofumpt@latest`). See the [Go](#go) section above.
 
 **Manual format:** `<leader>lf` — formats the current buffer on demand.
 
@@ -256,20 +248,22 @@ The cursor position is pinned with `winsaveview` / `winrestview` so it does not 
 
 | Plugin | Purpose |
 |---|---|
-| [lazy.nvim](https://github.com/folke/lazy.nvim) | Plugin manager with lock file |
-| [mason.nvim](https://github.com/williamboman/mason.nvim) | LSP / linter / formatter installer |
-| [mason-lspconfig.nvim](https://github.com/williamboman/mason-lspconfig.nvim) | Bridges Mason with Neovim LSP |
-| [blink.cmp](https://github.com/saghen/blink.cmp) | Completion + signature help |
-| [friendly-snippets](https://github.com/rafamadriz/friendly-snippets) | Community snippet collection |
-| [schemastore.nvim](https://github.com/b0o/schemastore.nvim) | JSON schema validation |
-| [hover.nvim](https://github.com/lewis6991/hover.nvim) | Hover float UI (`K`) |
-| [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Git hunk signs + inline blame |
-| [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) | Fuzzy finder |
-| [nvim-tree.lua](https://github.com/nvim-tree/nvim-tree.lua) | File explorer sidebar |
-| [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) | Syntax highlighting + indent |
-| [catppuccin](https://github.com/catppuccin/nvim) | Colorscheme (Frappé flavour) |
-| [copilot.vim](https://github.com/github/copilot.vim) | GitHub Copilot inline suggestions |
-| [which-key.nvim](https://github.com/folke/which-key.nvim) | Keymap hint popup |
+| [lazy.nvim](https://github.com/folke/lazy.nvim) | Plugin manager — lazy-loads plugins and keeps a lock file for reproducible installs |
+| [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) | Lua utility library required by telescope, gitsigns, and other plugins |
+| [mason.nvim](https://github.com/williamboman/mason.nvim) | Installs and manages LSP servers, linters, and DAP adapters |
+| [mason-lspconfig.nvim](https://github.com/williamboman/mason-lspconfig.nvim) | Bridges Mason-installed servers with `vim.lsp`, auto-installing everything in `ensure_installed` |
+| [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) | Community LSP server configs, used as the base for `vim.lsp.enable(...)` calls |
+| [schemastore.nvim](https://github.com/b0o/schemastore.nvim) | Supplies JSON/YAML schemas to `jsonls` for validation and completion |
+| [blink.cmp](https://github.com/saghen/blink.cmp) | Completion engine (LSP, path, snippet, buffer sources) + signature help |
+| [friendly-snippets](https://github.com/rafamadriz/friendly-snippets) | Community snippet collection consumed by blink.cmp |
+| [hover.nvim](https://github.com/lewis6991/hover.nvim) | Hover float UI (`K`) — cleaner alternative to the built-in LSP hover window |
+| [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Git hunk signs in the gutter, inline blame, hunk stage/reset/preview |
+| [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) | Fuzzy finder for files, live grep, buffers, help tags, etc. |
+| [nvim-tree.lua](https://github.com/nvim-tree/nvim-tree.lua) | Sidebar file explorer |
+| [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) | Syntax highlighting, indentation, and incremental parsing via Tree-sitter |
+| [catppuccin](https://github.com/catppuccin/nvim) | Colorscheme (Frappé flavour) with LSP/diagnostic integrations |
+| [copilot.vim](https://github.com/github/copilot.vim) | GitHub Copilot inline AI code suggestions |
+| [which-key.nvim](https://github.com/folke/which-key.nvim) | Popup that shows available keymaps as you type a prefix |
 
 ---
 

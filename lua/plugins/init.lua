@@ -5,6 +5,24 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- ---------------------------------------------------------------------------
+-- Workaround for https://github.com/nvim-treesitter/nvim-treesitter/issues/8618
+-- Neovim 0.12's injection parsing can call vim.treesitter.get_node_text() on a
+-- node whose range() is nil (markdown fenced code blocks trigger this via the
+-- `set-lang-from-info-string!` directive), crashing the `conceal_line`
+-- decoration provider on every redraw. Upstream closed it as "not planned",
+-- so make get_node_text tolerate bad nodes instead of throwing.
+-- Remove once fixed in Neovim core.
+-- ---------------------------------------------------------------------------
+do
+    local orig_get_node_text = vim.treesitter.get_node_text
+    vim.treesitter.get_node_text = function(node, source, opts)
+        local ok, res = pcall(orig_get_node_text, node, source, opts)
+        if ok then return res end
+        return ""
+    end
+end
+
 require("lazy").setup({
     -- Essentials
     "nvim-lua/plenary.nvim",
